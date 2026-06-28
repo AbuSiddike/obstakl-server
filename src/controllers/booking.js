@@ -124,6 +124,14 @@ const confirmBooking = async (req, res, next) => {
       return sendError(res, 404, 'Property not found');
     }
 
+    if (property.status !== 'Approved') {
+      return sendError(res, 400, 'Cannot book a non-approved property');
+    }
+
+    if (!property.owner || !property.owner.id) {
+      return sendError(res, 400, 'Property is missing owner information');
+    }
+
     const tenantUser = await usersCollection.findOne({
       _id: new ObjectId(req.user.id),
     });
